@@ -15,7 +15,6 @@ def run_llm_cs_sys(cd_llm_sys_obj, var_name_desc, csv_file_obj, prmpt_type, prmp
             csv_data_path = f"{temp_dir}/{csv_file_obj.filename}"
             with open(csv_data_path, "wb+") as file_object:
                 file_object.write(csv_file_obj.file.read())
-        print(CEConfig.tmp_dir)
         variable_dict = json.loads(var_name_desc)
         result = cd_llm_sys_obj(var_name_desc_dict=variable_dict, data_path=csv_data_path, prompt_type= prmpt_type, prompt_info=prmpt_info,  include_statistics= use_stat, tmp_dir=temp_dir)
         # convert to base64

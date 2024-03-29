@@ -102,7 +102,6 @@ class CDExpert:
     return prompt
 
   def gpt4_client(self):
-    print(CEConfig.openai_api)
     client = OpenAI(api_key=CEConfig.openai_api)
     model = "gpt-4-0125-preview"
     temperature = 0.2
