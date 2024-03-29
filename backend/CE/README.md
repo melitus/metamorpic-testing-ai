@@ -48,7 +48,7 @@ csv_file : "..."
 #### Parameter definition:
 1. ```var_name_desc```: variable name and description.
 1. ```prompt```: This variable indicates if llm should use base prompt or optimized prompt. It has only two options; ```base``` or ```opt```.
-2. ```prompt_info```: This variable contains a variable brief description of the dataset.
+2. ```prompt_info```: This variable gives a brief description of the dataset.
 3. ```use_stats```: This boolean variable indicates if the system should used statistical information (pearson correlation)
 4. ```csv_file```: Csv file of dataset (optional).
 
