@@ -25,7 +25,7 @@ The cause & effect backend system is an ML system that utilize large language mo
 
 ### Endpoints:
 ```local server```: ```http://127.0.0.1:8000```; 
-```cloud server```: ``` ... ```
+```cloud server```: ```https://causal-discovery-llm.onrender.com```
 
 1. cd_llm (```POST```) : ```local server```/```cd_llm```;```TESTED```.
 
