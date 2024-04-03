@@ -33,26 +33,45 @@ The cause & effect backend system is an ML system that utilize large language mo
 ```request type```: ```formData```; 
 ```request body```:
 ```
-var_name_desc: {  "var_1":{"var_name": "abc", "var_desc": "abc abc abc abc abc abc"}, 
-                  "var_2":{"var_name": "def", "var_desc": "def def def def def def"},            
-                  "var_3":{"var_name": "ghi", "var_desc": "ghi ghi ghi ghi ghi ghi"},           
-                  "var_4":{"var_name": "jkl", "var_desc": "jkl jkl jkl jkl jkl jkl"},         
-                  "var_5":{"var_name": "mno", "var_desc": "mno mno mno mno mno mno"}
-                }
+var_name_desc: "var_name_desc":{
+                                 "var_1":{"var_name": "dyspnoea", "var_desc": "whether or not the patient has dyspnoea, also known as shortness of breath"},
+                                 "var_2":{"var_name": "tuberculosis", "var_desc": "whether or not the patient has tuberculosis"},
+                                 "var_3":{"var_name": "lung cancer", "var_desc": "whether or not the patient has lung cancer"},
+                                 "var_4":{"var_name": "bronchitis", "var_desc": "whether or not the patient has either tuberculosis or lung cancer"},
+                                 "var_5":{"var_name": "either tuberculosis or lung cancer", "var_desc": "whether or not the patient is a smoker"},
+                                 "var_6":{"var_name": "smoking", "var_desc": "whether or not the patient is a smoker"},
+                                 "var_7":{"var_name": "recent visit to asia", "var_desc": "whether or not the patient has recently visited asia"},
+                                 "var_8":{"var_name": "positive chest xray", "var_desc": "whether or not the patient has had a positive chest xray"}
+                                }
 prompt: base
-prompt_info: alphabets
+prompt_info: lung disease
 use_stats: False
 csv_file : "..."
+n_aug: 1
+robust_test: swap
 ```
 
 #### Parameter definition:
 1. ```var_name_desc```: variable name and description.
-1. ```prompt```: This variable indicates if llm should use base prompt or optimized prompt. It has only two options; ```base``` or ```opt```.
+1. ```prompt```: This variable indicates if llm should use base prompt or optimized prompt. It has four options; ```base```, ```opt```, ```metamorphic_base```, and ```metamorphic_opt```.
 2. ```prompt_info```: This variable gives a brief description of the dataset.
-3. ```use_stats```: This boolean variable indicates if the system should used statistical information (pearson correlation)
+3. ```use_stats```: This boolean variable indicates if the system should used statistical information (pearson correlation coefficient between current variable and other variables)
 4. ```csv_file```: Csv file of dataset (optional).
+5. ```n_aug```: Number of characters to alter for metamorphic testing(```robustness```).
+6. ```robust_test```: Specfies what type of altering should be done to the word or text. (Only one should be selected at a time)
+
+#### Types of ```robust_test``` :
+1. ```swap```: randomly swap character(s) in a word. 
+2. ```char_delete```: randomly delete character(s) in a word.
+3. ```add_char```: randomly add character(s) in a word.
+4. ```add_space```: randomly add space(s) in a word.
+5. ```add_number```: randomly add number(s) in a word.
+6. ```swap_with_number```: randomly replace character(s) with number in a word.
+7. ```synonym_sub```: rephrase a word or sentence.
 
 #### System Response:
+```response type```: ```Json```; 
+```response body```:
 ```
 {
     b64_result: "..."
