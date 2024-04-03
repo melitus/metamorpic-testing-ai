@@ -4,11 +4,15 @@ import igraph as ig
 import bnlearn as bn
 import networkx as nx
 from openai import OpenAI
+import matplotlib.pyplot as plt
 from ..config.config import CEConfig
 
 
 
 def set_prompt(prompt_type, data_info):
+    if "metamorphic" in prompt_type:
+      prompt_type =  prompt_type.split("_")[1].strip()
+
     if prompt_type == "base":
         prompt_base=[
             {
@@ -41,17 +45,15 @@ class DrawDAG:
 
   "Causal Discovery diagram drawer."
 
-  def __init__(self, dag):
-
-    self.dag =dag
+  def __init__(self):
     self.graph = nx.DiGraph()
-
-  def create_clean_DAgraph(self):
+    
+  def create_clean_DAgraph(self, dag):
     clean_dict = {}
-    for d in self.dag:
-      if len(self.dag[d]) == 0:
+    for d in dag:
+      if len(dag[d]) == 0:
         continue
-      clean_dict[d] = self.dag[d]
+      clean_dict[d] = dag[d]
     return clean_dict
 
   def created_dag_list(self, da_g):
@@ -66,22 +68,23 @@ class DrawDAG:
     final_list.extend(new_list)
     return final_list
 
-  def draw(self, tmp, save=True):
-    da_g = self.create_clean_DAgraph()
+  def draw(self, dag, tmp, save=True):
+    da_g = self.create_clean_DAgraph(dag)
     graph_list = self.created_dag_list(da_g)
     self.graph.add_edges_from(graph_list)
-    # plt.tight_layout()
-    # nx.draw_networkx(self.graph, arrows=True)
+    plt.tight_layout()
+    nx.draw_networkx(self.graph, arrows=True)
 
     image_path = f"{tmp}/graph.png"
     if save:
       plt.savefig(image_path, format="PNG")
+    plt.clf()
     return image_path
 
 
 class CDExpert:
   "LLM based causal discovery expert class."
-  def __init__(self, df, prompt_type, prompt_info, include_statistics):
+  def __init__(self, df, prompt_type, prompt_info, include_statistics, aug_map):
     self.gpt = self.gpt4_client
     self.df = df
     self.corr = None
@@ -91,7 +94,8 @@ class CDExpert:
     self.prompt_init += self.prompt_format
     self.predict_graph = dict()
     self.message_history = set_prompt(prompt_type, prompt_info)
-   
+    self.aug_map = aug_map
+    self.rev_aug_map = {v:k for k, v in self.aug_map.items()} if self.aug_map != None else None
     
   def get_data_prompt(self, to_visit):
     prompt = f'Addtionally, the Pearson correlation coefficient between {to_visit} and other variables are as follows:\n'
@@ -100,10 +104,10 @@ class CDExpert:
             continue
         prompt += f'{var}: {self.corr[var][to_visit]:.2f}\n'
     return prompt
-
+    
   def gpt4_client(self):
     client = OpenAI(api_key=CEConfig.openai_api)
-    model = "gpt-4-0125-preview"
+    model = CEConfig.openai_model_ver
     temperature = 0.2
     response = client.chat.completions.create(
                       model=model,
@@ -180,8 +184,12 @@ class CDExpert:
       n = len(df_order)
       adj_matrix = np.zeros((n, n))
       for i, var in enumerate(df_order):
+          if self.rev_aug_map:
+            var = self.rev_aug_map[var]
           if var in self.predict_graph:
               for node in self.predict_graph[var]:
+                  if self.aug_map:
+                    node = self.aug_map[node]
                   j = df_order.index(node)
                   adj_matrix[i][j] = 1
       return adj_matrix
@@ -229,18 +237,18 @@ class CDExpert:
 
         for node in answer:
             if node in unvisited_nodes and node not in frontier:
-                frontier.append(node)
+              frontier.append(node)
 
-    adj_matrix = self.construct_adjency_matrix()
+    # adj_matrix = self.construct_adjency_matrix()
+    # adj_matrix
+    return self.predict_graph
 
-    return self.predict_graph, adj_matrix
-
-def cd_llm_system(var_name_desc_dict, data_path, n_samples=100, prompt_type = "base", prompt_info=None, include_statistics=False, tmp_dir=None):
+def cd_llm_system(var_name_desc_dict, data_path, n_samples=100, prompt_type = "base", prompt_info=None, include_statistics=False, aug_map=None, tmp_dir=None):
   df = None
   if data_path != None:
     df = pd.read_csv(data_path)
-  llm_expert = CDExpert(df=df, prompt_type=prompt_type, prompt_info=prompt_info, include_statistics=include_statistics)
-  DAgraph, result = llm_expert.run_llm_bfs(var_name_desc_dict)
-  dag_drawer = DrawDAG(DAgraph)
-  path = dag_drawer.draw(tmp=tmp_dir)
+  dag_drawer = DrawDAG()
+  llm_expert = CDExpert(df=df, prompt_type=prompt_type, prompt_info=prompt_info, include_statistics=include_statistics, aug_map=aug_map)
+  DAgraph = llm_expert.run_llm_bfs(var_name_desc_dict)
+  path = dag_drawer.draw(dag=DAgraph, tmp=tmp_dir)
   return path
