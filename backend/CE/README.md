@@ -1,62 +1,27 @@
-# Cause & Effect Backend System
+# Deploy FastAPI on Render
 
-### INTRODUCTION & AIM:
-The cause & effect backend system is an ML system that utilize large language model's (GPT4) pre-trained knowledge for the purpose of causal discovery.
+Use this repo as a template to deploy a Python [FastAPI](https://fastapi.tiangolo.com) service on Render.
 
-### Repository Breakdown:
+See https://render.com/docs/deploy-fastapi or follow the steps below:
 
-##### INDSIDE ```backend/CE``` FOLDER:
-1. ```ce```: This module contains causal disovery scripts and configuration.
-2. ```main.py```: This script runs the application as a fastapi server.
-3. ```requirements.txt```: this contains the requirements configuration.
+## Manual Steps
 
-##### INDSIDE ```ce``` FOLDER:
-1. ```components/ce_logic.py```: This script contains the caual discovery using llms logic.
-2. ```config/config.py```: This script contains system configurations.
-3. ```util/sys_utils.py```: This script contains utility functions.
+1. You may use this repository directly or [create your own repository from this template](https://github.com/render-examples/fastapi/generate) if you'd like to customize the code.
+2. Create a new Web Service on Render.
+3. Specify the URL to your new repository or this repository.
+4. Render will automatically detect that you are deploying a Python service and use `pip` to download the dependencies.
+5. Specify the following as the Start Command.
 
-### How to run the Cause & Effect Backend System locally:
-1. Create and activate a virtual environment: ```python3 -m venv _name_of_virtual_env_```.
-2. Install dependencies using: ```pip install -r requirements.txt```.
-3. Create a ```.env``` file and set the following variables:
-    ```Request for the environment variables from the developer in charge.```,
-  
-5. Run the server locally using: ```uvicorn main:app --reload```
+    ```shell
+    uvicorn main:app --host 0.0.0.0 --port $PORT
+    ```
 
-### Endpoints:
-```local server```: ```http://127.0.0.1:8000```; 
-```cloud server```: ``` ... ```
+6. Click Create Web Service.
 
-1. cd_llm (```POST```) : ```local server```/```cd_llm```;```TESTED```.
+Or simply click:
 
-### Request Body Breakdown:
-```request type```: ```formData```; 
-```request body```:
-```
-var_name_desc: {  "var_1":{"var_name": "abc", "var_desc": "abc abc abc abc abc abc"}, 
-                  "var_2":{"var_name": "def", "var_desc": "def def def def def def"},            
-                  "var_3":{"var_name": "ghi", "var_desc": "ghi ghi ghi ghi ghi ghi"},           
-                  "var_4":{"var_name": "jkl", "var_desc": "jkl jkl jkl jkl jkl jkl"},         
-                  "var_5":{"var_name": "mno", "var_desc": "mno mno mno mno mno mno"}
-                }
-prompt: base
-prompt_info: alphabets
-use_stats: False
-csv_file : "..."
-```
+[![Deploy to Render](https://render.com/images/deploy-to-render-button.svg)](https://render.com/deploy?repo=https://github.com/render-examples/fastapi)
 
-#### Parameter definition:
-1. ```var_name_desc```: variable name and description.
-1. ```prompt```: This variable indicates if llm should use base prompt or optimized prompt. It has only two options; ```base``` or ```opt```.
-2. ```prompt_info```: This variable contains a variable brief description of the dataset.
-3. ```use_stats```: This boolean variable indicates if the system should used statistical information (pearson correlation)
-4. ```csv_file```: Csv file of dataset (optional).
+## Thanks
 
-#### System Response:
-```
-{
-    b64_result: "..."
-}
-```
-#### System Response definition:
-1. ```b64_result```: Base64 image format of the generated causal graph.
+Thanks to [Harish](https://harishgarg.com) for the [inspiration to create a FastAPI quickstart for Render](https://twitter.com/harishkgarg/status/1435084018677010434) and for some sample code!
