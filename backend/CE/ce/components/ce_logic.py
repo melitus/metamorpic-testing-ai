@@ -9,7 +9,7 @@ from ..config.config import CEConfig
 
 
 
-def set_prompt(prompt_type, data_info):
+def set_prompt(prompt_type, prompt_info):
     if "metamorphic" in prompt_type:
       prompt_type =  prompt_type.split("_")[1].strip()
 
@@ -17,11 +17,11 @@ def set_prompt(prompt_type, data_info):
         prompt_base=[
             {
             "role": "system",
-            "content": f"You are an expert on {data_info}."
+            "content": prompt_info
             },
             {
             "role": "user",
-            "content": f"You are a helpful assistant to experts in {data_info} research. Our goal is to construct a causal graph between the following variables.\n"
+            "content": f"Our goal is to construct a causal graph between the following variables.\n"
             }
         ]
         return prompt_base
@@ -29,14 +29,11 @@ def set_prompt(prompt_type, data_info):
         prompt_opt=[
             {
               "role": "system",
-              "content": f"""You are an expert assistant {data_info} health specialist.
-                          The following factors are key variables related to lung diseases,
-                          some of these variables contain cause-and-effect relationships with each other.
-                          Utilize your vast knowledge on {data_info} to properly infer relationships among these variables."""
+              "content": prompt_info
               },
               {
               "role": "user",
-              "content":f"You are a helpful assistant to experts in {data_info} research. Our goal is to construct a causal graph between the following variables.\n"
+              "content":"Our goal is to construct a causal graph between the following variables.\n"
               }
         ]
         return prompt_opt
@@ -104,7 +101,7 @@ class CDExpert:
             continue
         prompt += f'{var}: {self.corr[var][to_visit]:.2f}\n'
     return prompt
-    
+
   def gpt4_client(self):
     client = OpenAI(api_key=CEConfig.openai_api)
     model = CEConfig.openai_model_ver

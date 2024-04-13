@@ -66,7 +66,7 @@ class Robustness:
     exra_char_text = text
     for riv in random_ids_values:
       rand_char = random.choice(abc_list)
-      exra_char_text = exra_char_text.replace(riv, f"{rand_char}{riv}")
+      exra_char_text = exra_char_text.replace(riv, f"{rand_char}{riv}",1)
     return exra_char_text
 
 
@@ -76,7 +76,7 @@ class Robustness:
     random_ids_values = [text[id] for id in random_ids]
     spaced_text = text
     for riv in random_ids_values:
-      spaced_text = spaced_text.replace(riv, f"  {riv}")
+      spaced_text = spaced_text.replace(riv, f"  {riv}",1)
     self.reset_n()
     return spaced_text
 
@@ -87,7 +87,7 @@ class Robustness:
     numbered_text = text
     for riv in random_ids_values:
       rand_val = random.randint(0,9)
-      numbered_text = numbered_text.replace(riv, f"{rand_val}{riv}")
+      numbered_text = numbered_text.replace(riv, f"{rand_val}{riv}",1)
     self.reset_n()
     return numbered_text
 
@@ -98,7 +98,7 @@ class Robustness:
     mapper = {t:i for i,t in enumerate(text)}
     number_swapped_text = text
     for riv in random_ids_values:
-      number_swapped_text  = number_swapped_text.replace(riv, str(mapper[riv]))
+      number_swapped_text  = number_swapped_text.replace(riv, str(mapper[riv]),1)
     self.reset_n()
     return number_swapped_text
 

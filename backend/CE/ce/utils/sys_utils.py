@@ -11,7 +11,7 @@ def b64_encode(obj_path):
 def run_llm_cs_sys(cd_llm_sys_obj, metamorphic_obj, var_name_desc, csv_file_obj, prmpt_type, prmpt_info, use_stat, n_aug, robust_test):
     csv_data_path = None
     with tempfile.TemporaryDirectory(dir=CEConfig.tmp_dir) as temp_dir:
-        if csv_file_obj.filename != "":
+        if csv_file_obj != None:
             csv_data_path = f"{temp_dir}/{csv_file_obj.filename}"
             with open(csv_data_path, "wb+") as file_object:
                 file_object.write(csv_file_obj.file.read())
