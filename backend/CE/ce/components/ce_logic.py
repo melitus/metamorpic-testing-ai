@@ -13,8 +13,8 @@ def set_prompt(prompt_type, prompt_info):
     if "metamorphic" in prompt_type:
       prompt_type =  prompt_type.split("_")[1].strip()
 
-    if prompt_type == "base":
-        prompt_base=[
+    if prompt_type == "base" or prompt_type == "opt":
+        prompt_ =[
             {
             "role": "system",
             "content": prompt_info
@@ -24,19 +24,8 @@ def set_prompt(prompt_type, prompt_info):
             "content": f"Our goal is to construct a causal graph between the following variables.\n"
             }
         ]
-        return prompt_base
-    elif prompt_type == "opt":
-        prompt_opt=[
-            {
-              "role": "system",
-              "content": prompt_info
-              },
-              {
-              "role": "user",
-              "content":"Our goal is to construct a causal graph between the following variables.\n"
-              }
-        ]
-        return prompt_opt
+        return prompt_
+
 
 class DrawDAG:
 
@@ -186,7 +175,10 @@ class CDExpert:
           if var in self.predict_graph:
               for node in self.predict_graph[var]:
                   if self.aug_map:
-                    node = self.aug_map[node]
+                    if node in self.rev_aug_map.keys():
+                      pass
+                    elif node in self.aug_map.keys():
+                      node = self.aug_map[node]
                   j = df_order.index(node)
                   adj_matrix[i][j] = 1
       return adj_matrix
