@@ -12,8 +12,9 @@ The cause & effect backend system is an ML system that utilize large language mo
 
 ##### INDSIDE ```ce``` FOLDER:
 1. ```components/ce_logic.py```: This script contains the caual discovery using llms logic.
-2. ```config/config.py```: This script contains system configurations.
-3. ```util/sys_utils.py```: This script contains utility functions.
+2. ```components/metamorphic_logic.py```: This script contais the metamorphic testing logic.
+3. ```config/config.py```: This script contains system configurations.
+4. ```util/sys_utils.py```: This script contains utility functions.
 
 ### How to run the Cause & Effect Backend System locally:
 1. Create and activate a virtual environment: ```python3 -m venv _name_of_virtual_env_```.
