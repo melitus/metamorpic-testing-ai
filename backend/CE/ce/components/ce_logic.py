@@ -110,6 +110,54 @@ class CDExpert:
     answer = answer.split('<Answer>')[1].split('</Answer>')[0].split(', ')
     return answer
 
+  def clean_input(self, text):
+    prompt_base=[
+    {
+      "role": "system",
+      "content": """You are a text pre-processor. You may be provided with texts that have been augmented.
+                    Your job as a text preprocessor is to understand how the text was augmented and reverse the augmention till you get the original word.
+                    The text contains a variable name and its description.
+                    The variable names and their respective descriptions could be augmented in the following ways;
+                  - character swap: to randomly swap character(s) in a word.
+                  - character delete: to randomly delete character(s) in a word.
+                  - character add: randomly add character(s) in a word.
+                  - random space: randomly add space(s) in a word.
+                  - random number: randomly add number(s) in a word.
+                  - random replace: randomly replace character(s) with number in a word.
+                  - rephrase: rephrase a word or sentence.
+
+                  When you detect the variables and their description have been augmented, identify what type of augmentation it is, then,
+                  reverse engineer the words with the provided knowledge to get the original word without augmentation.
+                  Sometimes, the description can provide some information as to what the actual variable word is.
+                  if the variable and its description is not augmented return it as is.
+                  Here is an example:
+                  cra:  a mteal objetc iwth fuor wheles.
+                  clean output:
+                  car : a metal object with four wheels.
+                  Logic for cleaning:
+                  character swap was the augmentation used, so reverse engineering the words resulted to the clean output result.
+                """
+    },
+    {
+      "role": "user",
+      "content": f"You are a helpful assistant, kindly help me clean this text: {text}.\nProvide your final answer within the tags <Answer>...</Answer>"
+    }
+    ]
+    client = OpenAI(api_key = CEConfig.openai_api)
+    model = CEConfig.openai_model_ver
+    temperature = 0.2
+    response = client.chat.completions.create(
+                      model=model,
+                      messages=prompt_base,
+                      temperature=temperature,
+                      max_tokens=4095,
+                      frequency_penalty=0,
+                      presence_penalty=0)
+
+    answer = response.choices[0].message.content
+    answer = answer.split('<Answer>')[1].split('</Answer>')[0].split(', ')
+    return answer[0]
+
   def clean_answer(self, answer, independent_nodes, nodes):
     for node in answer:
       if node in independent_nodes:
@@ -126,8 +174,10 @@ class CDExpert:
     for var in var_count_keys:
         var_name = var_names_and_desc[var]["var_name"]
         var_desc = var_names_and_desc[var]["var_desc"]
-        self.message_history[1]['content'] += f'''{var_name}: {var_desc}\n'''
-        new_nodes.append(var_name)
+        var_name_desc = f'''{var_name}: {var_desc}\n'''
+        var_name_desc = self.clean_input(var_name_desc)
+        self.message_history[1]['content'] += var_name_desc
+        new_nodes.append(var_name_desc.split(":")[0].strip())
     self.message_history[1]['content'] += self.prompt_init
     return new_nodes
 
